@@ -1,0 +1,67 @@
+name: Android CI with Jetpack Compose
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'adopt'
+        java-version: '11'
+
+    - name: Set up Android SDK
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'android'
+        java-version: '8'
+
+    - name: Cache Gradle dependencies
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    - name: Build and Test
+      run: ./gradlew build test
+
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-results
+        path: app/build/reports/tests
+
+    - name: Upload APK
+      if: success()
+      uses: actions/upload-artifact@v2
+      with:
+        name: app-release
+        path: app/build/outputs/apk/release/app-release.apk
+
+    - name: Install Android Emulator
+      run: |
+        echo y | sdkmanager "emulator" "system-images;android-30;google_apis;x86" > /dev/null
+        echo no | avdmanager create avd --name test --package "system-images;android-30;google_apis;x86" --tag "google_apis" --abi "x86"
+        emulator -avd test -no-audio -no-window -gpu swiftshader -verbose -qemu -m 2048 &
+        android-wait-for-emulator
+
+    - name: Build and Test Compose
+      run: ./gradlew connectedAndroidTest
+
+    - name: Stop Emulator
+      run: adb emu kill

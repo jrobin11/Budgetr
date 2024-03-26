@@ -1,0 +1,93 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id "io.sentry.android.gradle" version "3.4.2"
+    id 'io.realm.kotlin'
+    id("org.jetbrains.dokka")
+}
+
+android {
+    namespace 'com.example.budgetr'
+    compileSdk 34
+
+    testOptions{
+        unitTests.all {
+            useJUnitPlatform()
+        }
+    }
+
+    defaultConfig {
+        applicationId "com.example.budgetr"
+        minSdk 28
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.4.4'
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+}
+
+dependencies {
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
+    implementation 'io.realm.kotlin:library-base:1.6.0'
+    implementation "androidx.navigation:navigation-compose:2.7.4"
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
+    implementation 'androidx.activity:activity-compose:1.8.0'
+    implementation "androidx.compose.ui:ui:$compose_ui_version"
+    implementation "androidx.compose.ui:ui-tooling-preview:$compose_ui_version"
+    implementation 'androidx.compose.material3:material3:1.1.2'
+    implementation 'com.marosseleng.android:compose-material3-datetime-pickers:0.6.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2'
+    implementation "com.github.skydoves:colorpicker-compose:1.0.0"
+    implementation "me.saket.swipe:swipe:1.0.0"
+    implementation "io.github.serpro69:kotlin-faker:1.13.0"
+    implementation "com.github.tehras:charts:0.2.4-alpha"
+    implementation "com.google.accompanist:accompanist-pager:0.29.1-alpha"
+    implementation 'io.sentry:sentry-android:6.13.1'
+    implementation 'io.sentry:sentry-compose-android:6.13.1'
+    implementation 'androidx.navigation:navigation-runtime-ktx:2.7.4'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_ui_version"
+    debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
+    debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
+}
